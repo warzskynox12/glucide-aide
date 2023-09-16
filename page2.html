@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="index.css">
+    <title>Calculette</title>
+</head>
+<body>
+    <input type="checkbox" id="menu-toggle" class="menu-toggle">
+    <label for="menu-toggle" class="menu-button">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </label>
+    <nav class="menu">
+        <div class="button-container">
+            <div class="h1-div"><button class="button5">Menu</button></div><br><br>
+            <div class="button-div"><button onclick="menu()" id="menu-btn" class="button">Menu</button><br></div>
+            <div class="button-div"><button onclick="page1()" id="bolus" class="button">bolus</button><br></div>
+            <div class="button-div"><button onclick="page2()" id="calculatrice" class="button">calculatrice</button><br></div>
+            <div class="button-div"><button onclick="page3()" id="historique" class="button">historique</button></div>
+            <script>
+                function page1() {
+                    window.location.href = "page1.html";
+                }
+                function page2() {
+                    window.location.href = "page2.html";
+                }
+                function page3() {
+                    window.location.href = "test.html";
+                }
+                function menu() {
+                    window.location.href = "index.html";
+                }
+                </script>
+        </div>
+    </nav>
+        <center><h1>Calculette</h1></center>
+        <p>
+            <label for="text">glycemie :</label>
+            <input type="text" id="glycemie"><br>
+        </p>
+        <p>
+            <label for="text">glucide :</label>
+            <input type="text" id="glucide"><br>
+        </p>
+        <p>
+            <label for="checkbox">Matin :</label>
+            <input type="checkbox" id="Matin"><br>
+            <label for="checkbox">Midi :</label>
+            <input type="checkbox" id="Midi"><br>
+            <label for="checkbox">Goûter :</label>
+            <input type="checkbox" id="Goûter"><br>
+            <label for="checkbox">Soir :</label>
+            <input type="checkbox" id="Soir"><br>
+        </p>
+        <p>
+            <center><button onclick="result()" id="submit-btn" class="button2">resultat</button></center>
+        </p>
+            <div id="resultats" class="result"></div>
+            <div id="resultats2" class="result"></div>
+    <script>
+        function result(){
+            afficherValeurs();
+            sauvegarderValeur();
+        }
+
+        function recupererValeur(cookieName) {
+            var cookies = document.cookie.split(";"); // Sépare les cookies individuels
+            var valeur = "";
+
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim(); // Supprime les espaces autour du cookie
+                if (cookie.indexOf(cookieName + "=") === 0) {
+                    valeur = cookie.substring(cookieName.length + 1, cookie.length);
+                    break;
+                }
+            }
+
+            return valeur;
+        }
+
+        function afficherValeurs() {
+            var bolusmaValue = recupererValeur("bolusma");
+            var bolusmiValue = recupererValeur("bolusmi");
+            var bolusgoValue = recupererValeur("bolusgo");
+            var bolussoValue = recupererValeur("bolusso");
+
+            var resultatsDiv = document.getElementById("resultats");
+            var glucide = document.getElementById("glucide").value;
+            var glycemie = document.getElementById("glycemie").value;
+            var Matin = document.getElementById("Matin");
+            var Midi = document.getElementById("Midi");
+            var Gouter = document.getElementById("Goûter");
+            var Soir = document.getElementById("Soir");
+
+            if (glucide === "" ) {
+                    resultatsDiv.innerHTML = "Veuillez entrer une valeur pour le glucide";
+                } else{
+                    if(glycemie === ""){
+                        resultatsDiv.innerHTML = "Veuillez entrer une valeur pour le glycemie";
+                    } else{
+                        if (glycemie < 170) {
+                            if (Matin.checked) {
+                                var resultat = (bolusmaValue * glucide).toFixed(2);
+                                resultatsDiv.innerHTML = resultat + " Uniter" + "<br>";
+                                resultatsValue = resultat + "ui";
+                            }else if (Midi.checked) {
+                                var resultat = (bolusmiValue * glucide).toFixed(2);
+                                resultatsDiv.innerHTML = resultat + " Uniter" + "<br>";
+                                resultatsValue = resultat + "ui";
+                            }else if (Gouter.checked) {
+                                var resultat = (bolusgoValue * glucide).toFixed(2);
+                                resultatsDiv.innerHTML = resultat + " Uniter" + "<br>";
+                                resultatsValue = resultat + "ui";
+                            }else if (Soir.checked) {
+                                var resultat = (bolussoValue * glucide).toFixed(2);
+                                resultatsDiv.innerHTML = resultat + " Uniter" + "<br>";
+                                resultatsValue = resultat + "ui";
+                            }else {
+                                resultatsDiv.innerHTML = "Aucune case n'a été cochée.";
+                            }   
+                        }
+
+                        if (glycemie > 170 && glycemie <= 220) {
+                            if (Matin.checked) {
+                                var resultat = (bolusmaValue * glucide + 1.5).toFixed(2);
+                                resultatsDiv.innerHTML = resultat + " Uniter" + "<br>";
+                                resultatsValue = resultat + "ui";
+                            } else if (Midi.checked) {
+                                var resultat = (bolusmiValue * glucide + 1.5).toFixed(2);
+                                resultatsDiv.innerHTML = resultat + " Uniter" + "<br>";
+                                resultatsValue = resultat+ "ui";
+                            } else if (Gouter.checked) {
+                                var resultat = (bolusgoValue * glucide + 1.5).toFixed(2);
+                                resultatsDiv.innerHTML = resultat + " Uniter" + "<br>";
+                                resultatsValue = resultat+ "ui";
+                            } else if (Soir.checked) {
+                                var resultat = (bolussoValue * glucide + 1.5).toFixed(2);
+                                resultatsDiv.innerHTML = resultat + " Uniter" + "<br>";
+                                resultatsValue = resultat+ "ui";
+                            } else {
+                                resultatsDiv.innerHTML = "Aucune case n'a été cochée.";
+                            }
+                        }
+
+                        if (glycemie > 220 && glycemie <= 270) {
+                            if (Matin.checked) {
+                                var resultat = (bolusmaValue * glucide + 3).toFixed(2);
+                                resultatsDiv.innerHTML = resultat + " Uniter" + "<br>";
+                                resultatsValue = resultat + "ui";
+                            } else if (Midi.checked) {
+                                var resultat = (bolusmiValue * glucide + 3).toFixed(2);
+                                resultatsDiv.innerHTML = resultat + " Uniter" + "<br>";
+                                resultatsValue = resultat + "ui";
+                            } else if (Gouter.checked) {
+                                var resultat = (bolusgoValue * glucide + 3).toFixed(2);
+                                resultatsDiv.innerHTML = resultat + " Uniter" + "<br>";
+                                resultatsValue = resultat + "ui";
+                            } else if (Soir.checked) {
+                                var resultat = (bolussoValue * glucide + 3).toFixed(2);
+                                resultatsDiv.innerHTML = resultat + " Uniter" + "<br>";
+                                resultatsValue = resultat + "ui";
+                            } else {
+                                resultatsDiv.innerHTML = "Aucune case n'a été cochée.";
+                            }
+                        }
+
+                        if (glycemie > 270 && glycemie <= 320) {
+                            if (Matin.checked) {
+                                var resultat = (bolusmaValue * glucide + 4.5).toFixed(2);
+                                resultatsDiv.innerHTML = resultat + " Uniter" + "<br>";
+                                resultatsValue = resultat + "ui";
+                            } else if (Midi.checked) {
+                                var resultat = (bolusmiValue * glucide + 4.5).toFixed(2);
+                                resultatsDiv.innerHTML = resultat + " Uniter" + "<br>";
+                                resultatsValue = resultat + "ui";
+                            } else if (Gouter.checked) {
+                                var resultat = (bolusgoValue * glucide + 4.5).toFixed(2);
+                                resultatsDiv.innerHTML = resultat + " Uniter" + "<br>";
+                                resultatsValue = resultat + "ui";
+                            } else if (Soir.checked) {
+                                var resultat = (bolussoValue * glucide + 4.5).toFixed(2);
+                                resultatsDiv.innerHTML = resultat + " Uniter" + "<br>";
+                                resultatsValue = resultat + "ui";
+                            } else {
+                                resultatsDiv.innerHTML = "Aucune case n'a été cochée.";
+                            }
+                        }
+
+                        if (glycemie > 320) {
+                            resultatsDiv.innerHTML = "Ta glycemie est trés haut appele les urgence au plus vite";
+                        }
+                    }
+                }
+        }
+        function menu() {
+            window.location.href = "index.html";
+        }
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+let checkboxName = ""; // Déclaration de la variable en dehors de la boucle
+
+checkboxes.forEach(checkbox => {
+  checkbox.addEventListener('click', function() {
+    if (this.checked) {
+      checkboxes.forEach(otherCheckbox => {
+        if (otherCheckbox !== this) {
+          otherCheckbox.checked = false;
+        }
+      });
+    }
+  });
+});
+
+function sauvegarderValeur() {
+    var resultats2 = document.getElementById("resultats2");
+    var posteRepas = " ";
+    var Matin = document.getElementById("Matin");
+    var Midi = document.getElementById("Midi");
+    var Gouter = document.getElementById("Goûter");
+    var Soir = document.getElementById("Soir");
+    var glucide = document.getElementById("glucide").value;
+    var resultats = resultatsValue;
+    var glycemie = document.getElementById("glycemie").value;
+    var moment = "";
+    var currentTime = new Date();
+    var aujd = new Date();
+    var day = aujd.getDate();
+    var an = aujd.getFullYear();
+    var month = aujd.getMonth();
+    month = month+1;
+    if (glucide === "") {
+        resultats2.innerHTML = "Veuillez entrer une valeur pour le glucide";
+    } else if (glycemie === "") {
+        resultats2.innerHTML = "Veuillez entrer une valeur pour le glycemie";
+    } else {
+        if (month == 13) {
+            month = 1;
+        }
+        if (month < 10) {
+            month = "0" + month;
+        }
+        if (day < 10) {
+            day = "0" + day;
+        }
+        if (month < 1) {
+            month = "00";
+        }
+        if (day < 1) {
+            day = "00";
+        }
+        aujd = day + "-" + month + "-" + an;
+        if (Matin.checked) {
+            moment = "Matin";
+        } else if (Midi.checked) {
+            moment = "Midi";
+        } else if (Gouter.checked) {
+            moment = "Gouter";
+        } else if (Soir.checked) {
+            moment = "Soir";
+        } else {
+            resultats2.innerHTML = "Aucune case n'a été cochée.";
+        }
+        var cookieCount = document.cookie.split("cookie_").length - 1; // Compter le nombre de cookies existants
+        var cookieName = "cookie_" + (cookieCount + 1); // Nom du nouveau cookie
+
+        if (Matin.checked) {
+            document.cookie = cookieName + "=" + glucide + "g" + " " + glycemie + "mg/dl" + " " + resultats + " " + moment + " " + currentTime.getHours() + ":" + currentTime.getMinutes() + " " + aujd + " " + posteRepas + "mgdl";
+            resultats2.innerHTML = "Enregistré !";
+        } else if (Midi.checked) {
+            document.cookie = cookieName + "=" + glucide + "g" + " " + glycemie + "mg/dl" + " " + resultats + " " + moment + " " + currentTime.getHours() + ":" + currentTime.getMinutes() + " " + aujd + " " + posteRepas + "mgdl";
+            resultats2.innerHTML = "Enregistré !";
+        } else if (Gouter.checked) {
+            document.cookie = cookieName + "=" + glucide + "g" + " " + glycemie + "mg/dl" + " " + resultats + " " + moment + " " + currentTime.getHours() + ":" + currentTime.getMinutes() + " " + aujd + " " + "rien";
+            resultats2.innerHTML = "Enregistré !";
+        } else if (Soir.checked) {
+            document.cookie = cookieName + "=" + glucide + "g" + " " + glycemie + "mg/dl" + " " + resultats + " " + moment + " " + currentTime.getHours() + ":" + currentTime.getMinutes() + " " + aujd + " " + posteRepas + "mgdl";
+            resultats2.innerHTML = "Enregistré !";
+        } else {
+            resultats2.innerHTML = "Aucune case n'a été cochée.";
+        }
+    }
+}
+    </script>
+</body>
+</html>

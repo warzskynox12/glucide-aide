@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Liste des calculs</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <input type="checkbox" id="menu-toggle" class="menu-toggle">
+    <label for="menu-toggle" class="menu-button">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </label>
+    <nav class="menu">
+        <div class="button-container">
+            <div class="h1-div"><button class="button5">Menu</button></div><br><br>
+            <div class="button-div"><button onclick="menu()" id="menu-btn" class="button">Menu</button><br></div>
+            <div class="button-div"><button onclick="page1()" id="bolus" class="button">bolus</button><br></div>
+            <div class="button-div"><button onclick="page2()" id="calculatrice" class="button">calculatrice</button><br></div>
+            <div class="button-div"><button onclick="page3()" id="historique" class="button">historique</button></div>
+            <script>
+                function page1() {
+                    window.location.href = "page1.html";
+                }
+                function page2() {
+                    window.location.href = "page2.html";
+                }
+                function page3() {
+                    window.location.href = "test.html";
+                }
+                function menu() {
+                    window.location.href = "index.html";
+                }
+                </script>
+        </div>
+    </nav>    
+<center><h1>Liste des calculs</h1></center>
+    <table id="table-cookies">
+        
+            <thead>
+                <tr>
+                    <th class="last-column2">Date</th>
+                    <th class="last-column2">Moment</th>
+                    <th class="last-column">Glucide</th>
+                    <th class="last-column">Glycémie</th>
+                    <th class="last-column2">Unité</th>
+                    <th class="last-column">Glycémie PR</th>
+                </tr>
+            
+        </thead>
+        <tbody id="tbody-cookies"></tbody>
+    </table>
+
+    <script>
+        function getListeCookies() {
+            var cookies = document.cookie.split(";");
+
+            var listeCookies = [];
+            cookies.forEach(cookie => {
+                var cookiePair = cookie.split("=");
+                var cookieName = cookiePair[0].trim();
+                var cookieValue = cookiePair[1].trim();
+
+                if (cookieName.startsWith("cookie_")) {
+                    var cookieData = cookieValue.split(" ");
+                    var cookieInfo = {
+                        cookieName: cookieName,
+                        date: cookieData[5],
+                        time: cookieData[4],
+                        glucide: cookieData[0],
+                        glycemie: cookieData[1],
+                        resultats: cookieData[2],
+                        moment: cookieData[3],
+                        posteRepas: cookieData[6] || ''
+                    };
+                    listeCookies.push(cookieInfo);
+                }
+            });
+
+            listeCookies.sort((a, b) => {
+                var numberA = parseInt(a.cookieName.substring(7));
+                var numberB = parseInt(b.cookieName.substring(7));
+                return numberB - numberA;
+            });
+
+            return listeCookies;
+        }
+
+        function getCookie(cookieName) {
+            var cookies = document.cookie.split(";");
+
+            for (var i = 0; i < cookies.length; i++) {
+                var cookiePair = cookies[i].split("=");
+                var currentCookieName = cookiePair[0].trim();
+
+                if (currentCookieName === cookieName) {
+                    var cookieValue = cookiePair[1].trim();
+                    var cookieData = cookieValue.split(" ");
+
+                    return {
+                        cookieName: currentCookieName,
+                        glucide: cookieData[0],
+                        glycemie: cookieData[1],
+                        resultats: cookieData[2],
+                        moment: cookieData[3],
+                        date: cookieData[5],
+                        posteRepas: cookieData[6]
+                    };
+                }
+            }
+
+            return null;
+        }
+
+        function updatePosteRepas(input) {
+            var cookieName = input.getAttribute('data-cookie-name');
+            var posteRepas = input.value;
+
+            var oldCookie = getCookie(cookieName);
+
+            document.cookie = cookieName + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+
+            var updatedCookie = {
+                cookieName: cookieName,
+                date: oldCookie.date,
+                time: oldCookie.time,
+                glucide: oldCookie.glucide,
+                glycemie: oldCookie.glycemie,
+                resultats: oldCookie.resultats,
+                moment: oldCookie.moment,
+                posteRepas: /^\d+$/.test(posteRepas) ? posteRepas + " mg/dl" : posteRepas
+            };
+
+            var cookieString = `${updatedCookie.cookieName}=${updatedCookie.glucide} ${updatedCookie.glycemie} ${updatedCookie.resultats} ${updatedCookie.moment} ${updatedCookie.time} ${updatedCookie.date} ${updatedCookie.posteRepas}`;
+            document.cookie = cookieString;
+
+            input.outerHTML = /^\d+$/.test(posteRepas) ? posteRepas + " mg/dl" : posteRepas;
+            location.reload();
+        }
+
+        var cookies = getListeCookies();
+        var tbody = document.getElementById("tbody-cookies");
+
+        cookies.forEach(cookie => {
+            var row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${cookie.date}</td>
+                <td>${cookie.moment}</td>
+                <td>${cookie.glucide}</td>
+                <td>${cookie.glycemie}</td>
+                <td>${cookie.resultats}</td>
+                <td class="last-column3"><input type="text" class="input" data-cookie-name="${cookie.cookieName}" value="${cookie.posteRepas}" onchange="updatePosteRepas(this)"></td>
+            `;
+            tbody.appendChild(row);
+
+            var input = row.querySelector('input');
+            if (input.value !== '') {
+                input.outerHTML = /^\d+$/.test(cookie.posteRepas) ? cookie.posteRepas + " mg/dl" : cookie.posteRepas;
+            }
+        });
+        var glycemiePRCells = document.querySelectorAll('#table-cookies td:nth-child(6)');
+        glycemiePRCells.forEach(cell => {
+            var glycemiePRValue = parseFloat(cell.textContent);
+            if (glycemiePRValue <= 70) {
+                cell.style.backgroundColor = '#8B0000';
+                cell.style.color = 'white';
+            } else if (glycemiePRValue > 70 && glycemiePRValue < 170) {
+                cell.style.backgroundColor = '#008B00';
+                cell.style.color = 'white';
+            } else if (glycemiePRValue >= 170 && glycemiePRValue <= 250) {
+                cell.style.backgroundColor = '#00008B';
+                cell.style.color = 'white';
+            } else if(glycemiePRValue > 250){
+                cell.style.backgroundColor = 'black';
+                cell.style.color = 'white';
+            }
+            else{
+                cell.style.backgroundColor = 'white';
+                cell.style.color = 'black';
+            }
+            if (cell.textContent === "rien") {
+                cell.style.backgroundColor = 'white';
+                cell.style.color = 'black';
+            }
+        });
+
+        var glycemieCells = document.querySelectorAll('#table-cookies td:nth-child(4)');
+        glycemieCells.forEach(cell => {
+            var glycemieValue = parseFloat(cell.textContent);
+            if (glycemieValue <= 70) {
+                cell.style.backgroundColor = '#8B0000';
+                cell.style.color = 'white';
+            } else if (glycemieValue > 70 && glycemieValue < 170) {
+                cell.style.backgroundColor = '#008B00';
+                cell.style.color = 'white';
+            } else if (glycemieValue >= 170 && glycemieValue <= 250) {
+                cell.style.backgroundColor = '#00008B';
+                cell.style.color = 'white';
+            } else {
+                cell.style.backgroundColor = 'black';
+                cell.style.color = 'white';
+            }
+            if (cell.textContent === "rien") {
+                cell.style.backgroundColor = 'white';
+                cell.style.color = 'black';
+            }
+        });
+
+    function toggleMenu() {
+    var menu = document.querySelector('.menu');
+    var menuLeft = window.getComputedStyle(menu).getPropertyValue('left');
+
+    if (menuLeft === '-100%') {
+        menu.style.left = '0';
+    }
+    }
+    function page1() {
+        window.location.href = "page1.html";
+    }
+    function page2() {
+        window.location.href = "page2.html";
+    }
+    function page3() {
+        window.location.href = "test.html";
+    }
+    function menu() {
+        window.location.href = "index.html";
+    }
+
+</script>
+</body>
+</html>

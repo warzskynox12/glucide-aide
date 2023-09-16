@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Liste des calcul</title>
+    <style>
+        /* CSS pour ajouter des espaces entre les colonnes et centrer le contenu */
+        table {
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid white;
+            text-align: center;
+        }
+
+        body{
+            background-color: transparent;
+            background: black;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+            color: white;
+        }
+
+        button{
+            width: 200px;
+            height: 50px;
+            margin: 10px;
+            background-color: rgb(255, 255, 255);
+            border-radius: 25px;
+            font-size: 35px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <center><button onclick="menu()" id="menu-btn">Menu</button></center><br>
+    <h1>Liste des calcul</h1>
+    <table id="table-cookies">
+        <thead>
+            <tr>
+                <th>Nom du cookie</th>
+                <th>Date</th>
+                <th>Heure</th>
+                <th>Glucide</th>
+                <th>Glycémie</th>
+                <th>Unité</th>
+                <th>Moment</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="tbody-cookies"></tbody>
+    </table>
+
+    <script>
+        function getListeCookies() {
+            var cookies = document.cookie.split(";");
+
+            var listeCookies = [];
+            cookies.forEach(cookie => {
+                var cookiePair = cookie.split("=");
+                var cookieName = cookiePair[0].trim();
+                var cookieValue = cookiePair[1].trim(); // Récupération de la valeur du cookie
+
+                if (cookieName.startsWith("cookie_")) { // Vérification si le nom du cookie commence par "cookie_"
+                    var cookieData = cookieValue.split(" "); // Séparation des informations du cookie en fonction des espaces
+                    var cookieInfo = {
+                        cookieName: cookieName, // Ajout du nom du cookie dans les informations
+                        date: cookieData[5],
+                        time: cookieData[4],
+                        glucide: cookieData[0],
+                        glycemie: cookieData[1],
+                        resultats: cookieData[2],
+                        moment: cookieData[3]
+                    };
+                    listeCookies.push(cookieInfo); // Ajout de l'objet contenant les informations du cookie dans la liste
+                }
+            });
+
+            // Tri des cookies par ordre chronologique (plus vieux en bas, plus récent en haut)
+            listeCookies.sort((a, b) => {
+                var dateA = new Date(a.date + ' ' + a.time);
+                var dateB = new Date(b.date + ' ' + b.time);
+                return dateA - dateB;
+            });
+
+            return listeCookies;
+        }
+
+        // Fonction pour supprimer un cookie
+        function supprimerCookie(cookieName) {
+            // Suppression du cookie en définissant une date d'expiration passée
+            document.cookie = cookieName + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+
+            // Rechargement de la page pour mettre à jour la table
+            location.reload();
+        }
+
+        // Appel de la fonction pour récupérer la liste des cookies
+        var cookies = getListeCookies();
+
+        // Récupération de l'élément tbody du tableau
+        var tbody = document.getElementById("tbody-cookies");
+
+        // Génération des lignes du tableau avec les données des cookies
+        cookies.forEach(cookie => {
+            var row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${cookie.cookieName}</td>
+                <td>${cookie.date}</td>
+                <td>${cookie.time}</td>
+                <td>${cookie.glucide}</td>
+                <td>${cookie.glycemie}</td>
+                <td>${cookie.resultats}</td>
+                <td>${cookie.moment}</td>
+                <td><button onclick="supprimerCookie('${cookie.cookieName}')">Supprimer</button></td>
+            `;
+            tbody.appendChild(row); // Ajoute chaque ligne au tbody
+        });
+
+        // Fonction pour revenir au menu principal
+        function menu() {
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>

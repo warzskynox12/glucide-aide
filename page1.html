@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>bolus</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <input type="checkbox" id="menu-toggle" class="menu-toggle">
+    <label for="menu-toggle" class="menu-button">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </label>
+    <nav class="menu">
+        <div class="button-container">
+            <div class="h1-div"><button class="button5">Menu</button></div><br><br>
+            <div class="button-div"><button onclick="menu()" id="menu-btn" class="button">Menu</button><br></div>
+            <div class="button-div"><button onclick="page1()" id="bolus" class="button">bolus</button><br></div>
+            <div class="button-div"><button onclick="page2()" id="calculatrice" class="button">calculatrice</button><br></div>
+            <div class="button-div"><button onclick="page3()" id="historique" class="button">historique</button></div>
+            <script>
+                function page1() {
+                    window.location.href = "page1.html";
+                }
+                function page2() {
+                    window.location.href = "page2.html";
+                }
+                function page3() {
+                    window.location.href = "test.html";
+                }
+                function menu() {
+                    window.location.href = "index.html";
+                }
+                </script>
+        </div>
+    </nav> 
+    <center><h1>Bolus</h1></center>
+        <p>
+            <label for="bolusma">Bolus Matin :</label>
+            <input type="text" id="bolusma" pattern="[0-9]+(\.[0-9]+)?" title="Veuillez entrer un nombre valide (chiffres et point décimal)" placeholder="Bolus Matin">
+            <div class="input-value" id="bolusmatin"></div>
+        </p><p>
+            <label for="bolusmi">Bolus Midi :</label>
+            <input type="text" id="bolusmi" pattern="[0-9]+(\.[0-9]+)?" title="Veuillez entrer un nombre valide (chiffres et point décimal)" placeholder="Bolus Midi">
+            <div class="input-value" id="bolusmidi"></div>
+        </p><p>
+            <label for="bolusgo">Bolus Goûter :</label>
+            <input type="text" id="bolusgo" pattern="[0-9]+(\.[0-9]+)?" title="Veuillez entrer un nombre valide (chiffres et point décimal)" placeholder="Bolus Goûter">
+            <div class="input-value" id="bolusgouter"></div>
+        </p><p>
+            <label for="bolusso">Bolus Soir :</label>
+            <input type="text" id="bolusso" pattern="[0-9]+(\.[0-9]+)?" title="Veuillez entrer un nombre valide (chiffres et point décimal)" placeholder="Bolus Soir">
+            <div class="input-value" id="bolussoir"></div>
+    </p>
+<center><button onclick="enregistrerToutesValeurs()" id="submit-btn" class="button2">Enregistrer</button></center>
+    <script>
+        document.addEventListener("DOMContentLoaded", function(event) {
+            recupererValeur();
+            afficherValeurs();
+        });
+
+        function sauvegarderValeur(cookieName) {
+            var valeur = document.getElementById(cookieName).value;
+
+            // Vérifier si le champ est vide
+            if (valeur.trim() === "") {
+                return; // Arrêter l'exécution de la fonction
+            }
+
+            document.cookie = cookieName + "=" + valeur;
+        }
+
+        function enregistrerToutesValeurs() {
+            sauvegarderValeur("bolusma");
+            sauvegarderValeur("bolusmi");
+            sauvegarderValeur("bolusgo");
+            sauvegarderValeur("bolusso");
+            location.reload(); // Rafraîchir la page
+        }
+
+        function recupererValeur(cookieName) {
+            var cookies = document.cookie.split(";"); // Sépare les cookies individuels
+            var valeur = "";
+
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim(); // Supprime les espaces autour du cookie
+                if (cookie.indexOf(cookieName + "=") === 0) {
+                    valeur = cookie.substring(cookieName.length + 1, cookie.length);
+                    break;
+                }
+            }
+
+            return valeur;
+        }
+
+        function afficherValeurs() {
+            var bolusmaValue = recupererValeur("bolusma");
+            var bolusmiValue = recupererValeur("bolusmi");
+            var bolusgoValue = recupererValeur("bolusgo");
+            var bolussoValue = recupererValeur("bolusso");
+
+            var bolusmatin = document.getElementById("bolusmatin");
+            var bolusmidi = document.getElementById("bolusmidi");
+            var bolusgouter = document.getElementById("bolusgouter");
+            var bolussoir = document.getElementById("bolussoir");
+
+            bolusmatin.innerHTML = "bolus matin : " + bolusmaValue;
+            bolusmidi.innerHTML = "bolus midi : " + bolusmiValue;
+            bolusgouter.innerHTML = "bolus gouter: " + bolusgoValue;
+            bolussoir.innerHTML = "bolus soir : " + bolussoValue;
+        }
+        function menu() {
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>
